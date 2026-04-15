@@ -162,7 +162,7 @@ function setupForm() {
     const condition = form.querySelector("select[name='condition']")?.value;
     const points = form.querySelector("input[name='points'], input[type='number']")?.value;
     const brand = form.querySelector("input[name='brand']")?.value.trim();
-    const exchangeType = form.querySelector("select[name='exchangeType']")?.value || "POINTS_ONLY";
+    const exchangeType = form.querySelector("select[name='exchangeType']")?.value || "POINTS";
     const tradePrefs = form.querySelector("textarea[name='tradePrefs'], input[name='tradePrefs']")?.value.trim();
 
     if (!title) return Api.showError("Item title is required.");

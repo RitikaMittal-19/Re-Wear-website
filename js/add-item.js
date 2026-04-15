@@ -178,7 +178,9 @@ function setupForm() {
     formData.append("brand", brand || "");
     formData.append("category", category.toUpperCase().replace(/ /g, "_"));
     formData.append("size", size.toUpperCase());
-    formData.append("condition", condition.toUpperCase().replace(/ /g, "_"));
+     formData.append(
+  "condition",
+  condition.toUpperCase().replace(/[-\s]/g, "_")
     formData.append("points", points);
     let exchangeTypeMapped = "POINTS_ONLY";
 

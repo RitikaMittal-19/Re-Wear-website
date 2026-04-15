@@ -63,7 +63,7 @@
                 </div>
 
                <!-- Add Item Form -->
-<form class="add-item-form" id="addItemForm">
+<form class="add-item-form" id="addItemForm" data-add-item-form>
   <div class="form-grid two-column">
     <!-- LEFT COLUMN: Photos -->
    <div class="form-section left-column">
@@ -71,8 +71,8 @@
     <h3>Photos</h3>
     <p>Add up to 5 high-quality photos of your item</p>
   </div>
-  <div id="photoGrid" style="display: flex; justify-content: center; align-items: center; height: 100%; min-height: 300px;">
-    <div onclick="triggerFileUpload()" style="
+ <div id="photoGrid" data-photo-grid style="display: flex; justify-content: center; align-items: center; height: 100%; min-height: 300px;">
+    <div onclick="triggerFileUpload()" data-add-photo style="...">
       width: 25vw;
       height: 25vw;
       max-width: 300px;
@@ -172,7 +172,7 @@
       <div class="form-group">
         <label for="itemPoints">Points Value</label>
         <input type="number" id="itemPoints" name="points" min="1" max="500" placeholder="45" required>
-        <small>Suggested: 35–65 points</small>
+        <small data-points-suggestion>Suggested: 35–65 points</small>
       </div>
 
       <div class="form-group">
@@ -198,10 +198,10 @@
       <h3>Tags</h3>
       <p>Add tags to help others find your item</p>
     </div>
-    <div class="tags-container">
+    <div class="tags-container" data-tag-container>
       <div class="tags-list" id="tagsList"></div>
       <div class="tag-input-container">
-        <input type="text" id="tagInput" placeholder="e.g., vintage, boho, casual">
+        <input type="text" id="tagInput" class="tag-input" data-tag-input placeholder="e.g., vintage, boho, casual">
         <button type="button" class="btn btn-outline" onclick="addTag()">Add Tag</button>
       </div>
     </div>
@@ -209,8 +209,8 @@
 
   <!-- Actions -->
   <div class="form-actions">
-    <button type="button" class="btn btn-outline" onclick="saveDraft()">Save Draft</button>
-    <button type="submit" class="btn btn-primary">List Item</button>
+    <button type="button" class="btn btn-outline" onclick="saveDraft()" data-draft-btn>Save Draft</button>
+    <button type="submit" class="btn btn-primary" data-submit-btn>List Item</button>
   </div>
 </form>
 

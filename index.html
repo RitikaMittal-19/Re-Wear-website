@@ -28,8 +28,8 @@
                 </nav>
                 
                 <div class="auth-buttons desktop-auth">
-                    <a href="#" class="btn btn-outline" onclick="openModal('loginModal')">Login</a>
-                    <a href="#" class="btn btn-primary" onclick="openModal('signupModal')">Sign Up</a>
+                    <a href="#" class="nav-login-btn" onclick="openModal('loginModal')">Login</a>
+                    <a href="#" class="nav-login-btn" onclick="openModal('signupModal')">Sign Up</a>
                 </div>
                 
                 <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
@@ -46,8 +46,8 @@
                     <a href="contact.html">Contact</a>
                 </nav>
                 <div class="mobile-auth">
-                    <a href="#" class="btn btn-outline" onclick="openModal('loginModal')">Login</a>
-                    <a href="#" class="btn btn-primary" onclick="openModal('signupModal')">Sign Up</a>
+                    <a href="#" class="nav-login-btn" onclick="openModal('loginModal')">Login</a>
+                    <a href="#" class="nav-login-btn" onclick="openModal('signupModal')">Sign Up</a>
                 </div>
             </div>
         </div>
@@ -154,7 +154,7 @@
     
 
     <!-- Featured Items Section -->
-    <section class="featured-items">
+    <section class="featured-items" data-featured-items    >
         <div class="container">
             <div class="section-header">
                 <h2>Featured Items</h2>
@@ -345,7 +345,7 @@
                 <h3>Welcome Back</h3>
                 <p>Sign in to your ReWear account</p>
                 
-                <form class="auth-form">
+                <form class="auth-form" id="loginForm">
                     <div class="form-group">
                         <label for="loginEmail">Email</label>
                         <input type="email" id="loginEmail" required>
@@ -385,7 +385,7 @@
                 </div>
                 
                 <div class="auth-switch">
-                    Don't have an account? <a href="#" onclick="switchModal('loginModal', 'signupModal')">Sign up</a>
+                    Don't have an account? <a href="#" onclick="switchModal('loginModal', 'signupModal')" data-switch-signup>Sign up</a>
                 </div>
             </div>
         </div>
@@ -403,15 +403,15 @@
                 <h3>Join ReWear</h3>
                 <p>Start your sustainable fashion journey today</p>
                 
-                <form class="auth-form">
+                <form class="auth-form" id="signupForm">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="signupFirstName">First Name</label>
-                            <input type="text" id="signupFirstName" required>
+                            <input type="text" name="firstName" id="signupFirstName" required>
                         </div>
                         <div class="form-group">
                             <label for="signupLastName">Last Name</label>
-                            <input type="text" id="signupLastName" required>
+                            <input type="text" name="lastName" id="signupLastName" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -452,7 +452,7 @@
                 </div>
                 
                 <div class="auth-switch">
-                    Already have an account? <a href="#" onclick="switchModal('signupModal', 'loginModal')">Sign in</a>
+                    Already have an account? <a href="#" data-switch-login onclick="switchModal('signupModal', 'loginModal')">Sign in</a>
                 </div>
             </div>
         </div>

@@ -256,29 +256,15 @@
                             <img src="/placeholder.svg?height=120&width=120" alt="Profile Picture">
                             <button class="btn btn-outline btn-small">Change Photo</button>
                         </div>
-                        <div class="profile-form">
-                            <div class="form-group">
-                                <label>Full Name</label>
-                                <p class="form-value">Sarah Martinez</p>
-                            </div>
-                            <div class="form-group">
-                                <label>Email</label>
-                                <p class="form-value">sarah.martinez@email.com</p>
-                            </div>
-                            <div class="form-group">
-                                <label>Location</label>
-                                <p class="form-value">San Francisco, CA</p>
-                            </div>
-                            <div class="form-group">
-                                <label>Bio</label>
-                                <p class="form-value">Fashion enthusiast and sustainability advocate. Love finding unique pieces and giving clothes a second life!</p>
-                            </div>
-                            <div class="form-group">
-                                <label>Preferred Sizes</label>
-                                <p class="form-value">Tops: M, Bottoms: 8, Shoes: 7.5</p>
-                            </div>
-                            <button class="btn btn-primary">Edit Profile</button>
-                        </div>
+                       <form class="profile-form" data-profile-form>
+  <input type="text" name="firstName" value="Sarah">
+  <input type="text" name="lastName" value="Martinez">
+  <input type="email" name="email" value="sarah@email.com">
+  <textarea name="bio">Fashion enthusiast and sustainability advocate.</textarea>
+  <input type="text" name="location" value="San Francisco, CA">
+  <input type="text" name="preferredSizes" value="Tops: M">
+  <button type="submit" class="btn btn-primary">Edit Profile</button>
+</form>
                     </div>
                 </div>
             </div>

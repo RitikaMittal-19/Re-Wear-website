@@ -162,7 +162,7 @@ function setupForm() {
     const condition = form.querySelector("select[name='condition']")?.value;
     const points = form.querySelector("input[name='points'], input[type='number']")?.value;
     const brand = form.querySelector("input[name='brand']")?.value.trim();
-    const exchangeType = form.querySelector("select[name='exchangeType']")?.value || "POINTS";
+    const exchangeType = form.querySelector("select[name='exchangeType']")?.value || "POINTS_ONLY";
     const tradePrefs = form.querySelector("textarea[name='tradePrefs'], input[name='tradePrefs']")?.value.trim();
 
     if (!title) return Api.showError("Item title is required.");
@@ -180,7 +180,13 @@ function setupForm() {
     formData.append("size", size.toUpperCase());
     formData.append("condition", condition.toUpperCase().replace(/ /g, "_"));
     formData.append("points", points);
-    formData.append("exchangeType", exchangeType.toUpperCase().replace(/ /g, "_"));
+    let exchangeTypeMapped = "POINTS_ONLY";
+
+if (exchangeType === "points") exchangeTypeMapped = "POINTS_ONLY";
+if (exchangeType === "trade") exchangeTypeMapped = "DIRECT_TRADE";
+if (exchangeType === "both") exchangeTypeMapped = "POINTS_OR_TRADE";
+
+formData.append("exchangeType", exchangeTypeMapped);
     formData.append("tradePrefs", tradePrefs || "");
 
     tags.forEach((tag) => formData.append("tags", tag));

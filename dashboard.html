@@ -63,11 +63,11 @@
             <div class="dashboard-header">
                 <div class="user-welcome">
                     <div class="user-avatar-large">
-                        <img src="assets/women1.jpg" alt="User Avatar">
+                       <img data-user-avatar src="assets/women1.jpg" alt="User Avatar">
                     </div>
                     <div class="user-info">
-                        <h1>Welcome back, Sarah!</h1>
-                        <p>Member since March 2023 • 4.9 ⭐ rating</p>
+                       <h1 data-user-fullname>Welcome back, Sarah!</h1>
+                        <p data-member-since>Member since March 2023 • 4.9 ⭐ rating</p>
                     </div>
                 </div>
                 <a href="add-item.html" class="btn btn-primary">
@@ -83,7 +83,7 @@
                         <span class="stat-title">Available Points</span>
                         <i class="fas fa-coins stat-icon"></i>
                     </div>
-                    <div class="stat-value">245</div>
+                    <div class="stat-value" data-user-points>245</div>
                     <div class="stat-change">+15 this week</div>
                 </div>
                 <div class="stat-card">
@@ -91,7 +91,7 @@
                         <span class="stat-title">Items Listed</span>
                         <i class="fas fa-tshirt stat-icon"></i>
                     </div>
-                    <div class="stat-value">12</div>
+                    <div class="stat-value" data-user-items-count>12</div>
                     <div class="stat-change">3 active</div>
                 </div>
                 <div class="stat-card">
@@ -99,7 +99,7 @@
                         <span class="stat-title">Successful Exchanges</span>
                         <i class="fas fa-exchange-alt stat-icon"></i>
                     </div>
-                    <div class="stat-value">28</div>
+                    <div class="stat-value" data-user-exchanges-count>28</div>
                     <div class="stat-change">+2 this month</div>
                 </div>
                 <div class="stat-card">
@@ -122,7 +122,7 @@
                 </div>
 
                 <!-- My Items Tab -->
-                <div class="tab-content active" id="my-items">
+                <div class="tab-content active" id="my-items" data-my-items>
                     <div class="items-list">
                         <div class="item-row">
                             <img src="/placeholder.svg?height=80&width=80" alt="Vintage Denim Jacket" class="item-thumbnail">
@@ -179,7 +179,7 @@
                 </div>
 
                 <!-- Exchanges Tab -->
-                <div class="tab-content" id="exchanges">
+                <div class="tab-content" id="exchanges" data-my-exchanges>
                     <div class="swaps-list">
                         <div class="swap-row">
                             <div class="swap-indicator outgoing"></div>
@@ -218,7 +218,7 @@
                 </div>
 
                 <!-- Favorites Tab -->
-                <div class="tab-content" id="favorites">
+                <div class="tab-content" id="favorites" data-my-wishlist>
                     <div class="items-list">
                         <div class="item-row">
                             <img src="/placeholder.svg?height=80&width=80" alt="Cashmere Scarf" class="item-thumbnail">

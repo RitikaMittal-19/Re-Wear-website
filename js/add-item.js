@@ -1,202 +1,214 @@
-// Add item form functionality
-let uploadedPhotos = []
-let itemTags = []
 
 document.addEventListener("DOMContentLoaded", () => {
-  initializeAddItemForm()
-})
-
-function initializeAddItemForm() {
-  const form = document.getElementById("addItemForm")
-  const photoInput = document.getElementById("photoInput")
-  const tagInput = document.getElementById("tagInput")
-
-  if (form) {
-    form.addEventListener("submit", handleFormSubmit)
+  // Redirect if not logged in
+  if (!Api.isLoggedIn()) {
+    Api.showError("Please log in to list an item.");
+    setTimeout(() => (window.location.href = "/Re-Wear-website/index.html"), 1000);
+    return;
   }
 
-  if (photoInput) {
-    photoInput.addEventListener("change", handlePhotoUpload)
+  setupPhotoUpload();
+  setupTagInput();
+  setupForm();
+});
+
+// ── Photo Preview ─────────────────────────────────────────────
+let selectedFiles = [];
+
+function setupPhotoUpload() {
+  const addPhotoBtn = document.querySelector("[data-add-photo], .add-photo-btn");
+  const photoGrid = document.querySelector("[data-photo-grid], .photo-grid");
+
+  // Create a hidden file input if not already present
+  let fileInput = document.getElementById("rw-file-input");
+  if (!fileInput) {
+    fileInput = document.createElement("input");
+    fileInput.type = "file";
+    fileInput.id = "rw-file-input";
+    fileInput.accept = "image/*";
+    fileInput.multiple = true;
+    fileInput.style.display = "none";
+    document.body.appendChild(fileInput);
   }
 
-  if (tagInput) {
-    tagInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        e.preventDefault()
-        addTag()
-      }
-    })
+  if (addPhotoBtn) {
+    addPhotoBtn.addEventListener("click", () => fileInput.click());
   }
-}
 
-function triggerFileUpload() {
-  const photoInput = document.getElementById("photoInput")
-  photoInput.click()
-}
+  fileInput.addEventListener("change", () => {
+    const newFiles = Array.from(fileInput.files);
+    const totalAllowed = 5 - selectedFiles.length;
+    const toAdd = newFiles.slice(0, totalAllowed);
 
-function handlePhotoUpload(e) {
-  const files = Array.from(e.target.files)
-
-  files.forEach((file) => {
-    if (uploadedPhotos.length >= 8) {
-      alert("Maximum 8 photos allowed")
-      return
+    if (newFiles.length > totalAllowed) {
+      Api.showError(`You can only add up to 5 photos. ${totalAllowed} slot(s) remaining.`);
     }
 
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        uploadedPhotos.push({
-          file: file,
-          url: e.target.result,
-          id: Date.now() + Math.random(),
-        })
-        updatePhotoGrid()
+    selectedFiles = [...selectedFiles, ...toAdd];
+    renderPhotoPreviews();
+    fileInput.value = ""; // reset so same file can be re-added
+  });
+}
+
+function renderPhotoPreviews() {
+  const photoGrid = document.querySelector("[data-photo-grid], .photo-grid");
+  if (!photoGrid) return;
+
+  // Keep the "Add Photo" button, remove old previews
+  const addBtn = photoGrid.querySelector("[data-add-photo], .add-photo-btn");
+  photoGrid.innerHTML = "";
+  if (addBtn) photoGrid.appendChild(addBtn);
+
+  selectedFiles.forEach((file, index) => {
+    const url = URL.createObjectURL(file);
+    const wrapper = document.createElement("div");
+    wrapper.style.cssText = "position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;flex-shrink:0";
+
+    wrapper.innerHTML = `
+      <img src="${url}" style="width:100%;height:100%;object-fit:cover">
+      <button onclick="removePhoto(${index})"
+        style="position:absolute;top:4px;right:4px;width:22px;height:22px;background:rgba(0,0,0,.6);color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center">
+        ✕
+      </button>
+      ${index === 0 ? '<span style="position:absolute;bottom:4px;left:4px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;padding:2px 6px;border-radius:4px">Cover</span>' : ""}
+    `;
+    photoGrid.insertBefore(wrapper, addBtn || null);
+  });
+
+  // Update Add Photo button visibility
+  const addPhotoBtn = document.querySelector("[data-add-photo], .add-photo-btn");
+  if (addPhotoBtn) {
+    addPhotoBtn.style.display = selectedFiles.length >= 5 ? "none" : "";
+  }
+}
+
+window.removePhoto = (index) => {
+  selectedFiles.splice(index, 1);
+  renderPhotoPreviews();
+};
+
+// ── Tag Input ─────────────────────────────────────────────────
+let tags = [];
+
+function setupTagInput() {
+  const tagInput = document.querySelector("[data-tag-input], .tag-input");
+  const tagContainer = document.querySelector("[data-tag-container], .tags-container");
+
+  if (!tagInput) return;
+
+  tagInput.addEventListener("keydown", (e) => {
+    if ((e.key === "Enter" || e.key === ",") && tagInput.value.trim()) {
+      e.preventDefault();
+      const tag = tagInput.value.trim().toLowerCase().replace(/,/g, "");
+      if (tag && !tags.includes(tag) && tags.length < 10) {
+        tags.push(tag);
+        renderTags();
+        tagInput.value = "";
       }
-      reader.readAsDataURL(file)
     }
-  })
-
-  // Clear the input
-  e.target.value = ""
+  });
 }
 
-function updatePhotoGrid() {
-  const grid = document.getElementById("photoGrid")
+function renderTags() {
+  const tagContainer = document.querySelector("[data-tag-container], .tags-container, [data-tags-display]");
+  if (!tagContainer) return;
 
-  grid.innerHTML = ""
-
-  // Add existing photos
-  uploadedPhotos.forEach((photo, index) => {
-    const photoDiv = document.createElement("div")
-    photoDiv.className = "photo-preview"
-    photoDiv.innerHTML = `
-            <img src="${photo.url}" alt="Upload ${index + 1}">
-            <button type="button" class="photo-remove" onclick="removePhoto(${photo.id})">
-                <i class="fas fa-times"></i>
-            </button>
-            ${index === 0 ? '<div class="photo-main-badge">Main</div>' : ""}
-        `
-    grid.appendChild(photoDiv)
-  })
-
-  // Add upload slot if less than 8 photos
-  if (uploadedPhotos.length < 8) {
-    const uploadSlot = document.createElement("div")
-    uploadSlot.className = "photo-upload-slot"
-    uploadSlot.onclick = triggerFileUpload
-    uploadSlot.innerHTML = `
-            <i class="fas fa-upload"></i>
-            <span>Add Photo</span>
-        `
-    grid.appendChild(uploadSlot)
-  }
+  tagContainer.innerHTML = tags.map((tag, i) => `
+    <span style="display:inline-flex;align-items:center;gap:6px;background:#f3f4f6;padding:4px 10px;border-radius:20px;font-size:13px;margin:4px 2px">
+      #${tag}
+      <button onclick="removeTag(${i})" style="border:none;background:none;cursor:pointer;font-size:12px;opacity:.6;line-height:1">✕</button>
+    </span>
+  `).join("");
 }
 
-function removePhoto(photoId) {
-  uploadedPhotos = uploadedPhotos.filter((photo) => photo.id !== photoId)
-  updatePhotoGrid()
-}
+window.removeTag = (index) => {
+  tags.splice(index, 1);
+  renderTags();
+};
 
-function addTag() {
-  const tagInput = document.getElementById("tagInput")
-  const tagValue = tagInput.value.trim().toLowerCase()
+// ── Main Form Submission ──────────────────────────────────────
+function setupForm() {
+  const form = document.querySelector("[data-add-item-form], #addItemForm, form");
+  if (!form) return;
 
-  if (tagValue && !itemTags.includes(tagValue) && itemTags.length < 10) {
-    itemTags.push(tagValue)
-    updateTagsList()
-    tagInput.value = ""
-  } else if (itemTags.length >= 10) {
-    alert("Maximum 10 tags allowed")
-  } else if (itemTags.includes(tagValue)) {
-    alert("Tag already exists")
-  }
-}
+  // Points suggestion based on condition
+  const conditionSelect = form.querySelector("select[name='condition'], select");
+  const pointsInput = form.querySelector("input[name='points'], input[type='number']");
+  const suggestedEl = document.querySelector("[data-points-suggestion]");
 
-function removeTag(tagValue) {
-  itemTags = itemTags.filter((tag) => tag !== tagValue)
-  updateTagsList()
-}
+  const conditionPoints = { "LIKE_NEW": "80-120", "EXCELLENT": "50-80", "GOOD": "30-50", "FAIR": "10-30" };
 
-function updateTagsList() {
-  const tagsList = document.getElementById("tagsList")
-
-  tagsList.innerHTML = itemTags
-    .map(
-      (tag) => `
-        <div class="tag">
-            ${tag}
-            <button type="button" class="tag-remove" onclick="removeTag('${tag}')">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `,
-    )
-    .join("")
-}
-
-function handleFormSubmit(e) {
-  e.preventDefault()
-
-  // Validate form
-  if (uploadedPhotos.length === 0) {
-    alert("Please add at least one photo")
-    return
+  if (conditionSelect && pointsInput) {
+    conditionSelect.addEventListener("change", () => {
+      const val = conditionSelect.value.toUpperCase().replace(/ /g, "_");
+      if (suggestedEl && conditionPoints[val]) {
+        suggestedEl.textContent = `Suggested: ${conditionPoints[val]} points`;
+      }
+    });
   }
 
-  // Collect form data
-  const formData = {
-    title: document.getElementById("itemTitle").value,
-    description: document.getElementById("itemDescription").value,
-    category: document.getElementById("itemCategory").value,
-    type: document.getElementById("itemType").value,
-    size: document.getElementById("itemSize").value,
-    condition: document.getElementById("itemCondition").value,
-    points: document.getElementById("itemPoints").value,
-    photos: uploadedPhotos,
-    tags: itemTags,
-  }
+  // Submit
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
 
-  console.log("Form submitted:", formData)
+    if (selectedFiles.length === 0) {
+      return Api.showError("Please add at least one photo.");
+    }
 
-  // Simulate form submission
-  alert("Item listed successfully! Redirecting to dashboard...")
+    const title = form.querySelector("input[name='title'], input[placeholder*='specific']")?.value.trim();
+    const description = form.querySelector("textarea[name='description'], textarea")?.value.trim();
+    const category = form.querySelector("select[name='category']")?.value;
+    const size = form.querySelector("select[name='size']")?.value;
+    const condition = form.querySelector("select[name='condition']")?.value;
+    const points = form.querySelector("input[name='points'], input[type='number']")?.value;
+    const brand = form.querySelector("input[name='brand']")?.value.trim();
+    const exchangeType = form.querySelector("select[name='exchangeType']")?.value || "POINTS_ONLY";
+    const tradePrefs = form.querySelector("textarea[name='tradePrefs'], input[name='tradePrefs']")?.value.trim();
 
-  // In a real app, you would send this data to your backend
-  setTimeout(() => {
-    window.location.href = "dashboard.html"
-  }, 1000)
-}
+    if (!title) return Api.showError("Item title is required.");
+    if (!description) return Api.showError("Description is required.");
+    if (!category || category === "Select Category") return Api.showError("Please select a category.");
+    if (!size || size === "Select Size") return Api.showError("Please select a size.");
+    if (!condition || condition === "Select Condition") return Api.showError("Please select a condition.");
+    if (!points || isNaN(points)) return Api.showError("Please enter a valid points value.");
 
-// Handle category change to update type options
-document.addEventListener("change", (e) => {
-  if (e.target.id === "itemCategory") {
-    updateTypeOptions(e.target.value)
-  }
-})
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("brand", brand || "");
+    formData.append("category", category.toUpperCase().replace(/ /g, "_"));
+    formData.append("size", size.toUpperCase());
+    formData.append("condition", condition.toUpperCase().replace(/ /g, "_"));
+    formData.append("points", points);
+    formData.append("exchangeType", exchangeType.toUpperCase().replace(/ /g, "_"));
+    formData.append("tradePrefs", tradePrefs || "");
 
-function updateTypeOptions(category) {
-  const typeSelect = document.getElementById("itemType")
-  const typeOptions = {
-    tops: ["t-shirt", "blouse", "shirt", "tank-top", "sweater"],
-    bottoms: ["jeans", "pants", "shorts", "skirt", "leggings"],
-    dresses: ["casual-dress", "formal-dress", "maxi-dress", "mini-dress"],
-    outerwear: ["jacket", "coat", "blazer", "cardigan", "hoodie"],
-    shoes: ["sneakers", "boots", "heels", "flats", "sandals"],
-    accessories: ["bag", "jewelry", "scarf", "hat", "belt"],
-  }
+    tags.forEach((tag) => formData.append("tags", tag));
+    selectedFiles.forEach((file) => formData.append("images", file));
 
-  typeSelect.innerHTML = '<option value="">Select type</option>'
+    const submitBtn = form.querySelector("button[type='submit'], [data-submit-btn]");
+    const draftBtn = form.querySelector("[data-draft-btn]");
 
-  if (typeOptions[category]) {
-    typeOptions[category].forEach((type) => {
-      const option = document.createElement("option")
-      option.value = type
-      option.textContent = type
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-      typeSelect.appendChild(option)
-    })
+    try {
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = "Listing..."; }
+      if (draftBtn) draftBtn.disabled = true;
+
+      const data = await Api.items.create(formData);
+      Api.showToast("Item listed successfully! 🎉");
+      setTimeout(() => (window.location.href = "/Re-Wear-website/dashboard.html"), 1000);
+    } catch (err) {
+      Api.showError(err.message || "Failed to list item. Please try again.");
+      if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = "List Item"; }
+      if (draftBtn) draftBtn.disabled = false;
+    }
+  });
+
+  // Save Draft (no-op for now — just shows a toast)
+  const draftBtn = form.querySelector("[data-draft-btn], button:not([type='submit'])");
+  if (draftBtn && draftBtn.textContent.toLowerCase().includes("draft")) {
+    draftBtn.addEventListener("click", (e) => {
+      e.preventDefault();
+      Api.showToast("Draft saved locally. (Full draft support coming in V2)", "info");
+    });
   }
 }
